@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <style>
+
+    :root {
+      touch-action: pan-x pan-y;
+      height: 100% 
+    }
+
+    #text-signal-name {
+      font: 30px Helvetica, sans-serif;
+      text-size-adjust: none;
+    }
+
+    #text-signal-description {
+      font: 16px Helvetica, sans-serif;
+      text-size-adjust: none;
+    }
+
+    #textbox {
+      margin-right: 30px;
+      margin-left: 30px;
+    }
+
+    @keyframes blink-red {
+      100%,
+      0% {
+        fill:  #550000;
+      }
+      60% {
+        fill: #ff0000;
+      }
+    }
+
+    @keyframes blink-yellow {
+      100%,
+      0% {
+        fill: #544700;
+      }
+      60% {
+        fill: #ffd900;
+      }
+    }
+
+    @keyframes blink-green {
+      100%,
+      0% {
+        fill: #005500;
+      }
+      60% {
+        fill: #00ff00;
+      }
+    }
+
+    @keyframes blink-lunar {
+      100%,
+      0% {
+        fill: #494b4d;
+      }
+      60% {
+        fill: #f5fbff;
+      }
+    }
+
+    .red {
+      fill: #ff0000;
+      cursor: pointer;
+    }
+
+    .yellow {
+      fill: #ffd900;
+      cursor: pointer;
+    }
+
+    .green {
+      fill: #00ff00;
+      cursor: pointer;
+    }
+
+    .lunar {
+      fill: #f5fbff;
+      cursor: pointer;
+    }
+
+    .dark {
+      fill: #333333;
+      cursor: pointer;
+    }
+
+    .empty {
+      fill: #ffffff;
+      fill-opacity: 0;
+      stroke: #e0e0e0;
+      stroke-dasharray: 20, 20;
+      cursor: pointer;
+    }
+
+    .flashing-red {
+      animation: blink-red 0.8s infinite;
+      cursor: pointer;
+    }
+
+    .flashing-yellow {
+      animation: blink-yellow 0.8s infinite;
+      cursor: pointer;
+    }
+
+    .flashing-green {
+      animation: blink-green 0.8s infinite;
+      cursor: pointer;
+    }
+
+    .flashing-lunar {
+      animation: blink-lunar 0.8s infinite;
+      cursor: pointer;
+    }
+
+    #top-aspect {
+      cursor: default;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    #middle-aspect {
+      cursor: default;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    #bottom-aspect {
+      cursor: default;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    .plaque-text {
+      alignment-baseline: middle;
+      text-anchor: middle;
+      font: 60px Helvetica, sans-serif;
+      text-size-adjust: none;
+      cursor: default;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    #rr-rule-text {
+      alignment-baseline: middle;
+      text-anchor: middle;
+      font: 60px Helvetica, sans-serif;
+      text-size-adjust: none;
+      cursor: default;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    #empty-plaque {
+      display: inline;
+    }
+
+    #commuter-plaque {
+      display: none;
+    }
+
+    #grade-plaque {
+      display: none;
+    }
+
+    #distant-signal-plaque {
+      display: none;
+    }
+
+    #slide-fence-plaque {
+      display: none;
+    }
+
+    #high-water-plaque {
+      display: none;
+    }
+
+    #number-plate {
+      display: none;
+    }
+
+    #slide-warning-indicator {
+      display: none;
+    }
+
+    #take-siding-indicator {
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+  <svg class="signal-image" width="800" height="900" viewBox="0 0 800 900" style="margin-left: auto; margin-right: auto; display: block;">
+    <circle onclick="cycleAspect('top')" fill="#FFFFFF" stroke="#000000" stroke-width="6" cx="400" cy="150" r="100" id="top-aspect" class="empty"/>
+    <circle onclick="cycleAspect('middle')" fill="#FFFFFF" stroke="#000000" stroke-width="6" cx="400" cy="400" r="100" id="middle-aspect" class="empty"/>
+    <circle onclick="cycleAspect('bottom')" fill="#FFFFFF" stroke="#000000" stroke-width="6" cx="400" cy="650" r="100" id="bottom-aspect" class="empty"/>
+    <!-- <circle fill="#FFFFFF" stroke="#000000" stroke-width="6" cx="375" cy="275" r="100" id="sideAspect" class="empty"/> -->
+
+    <g id="railroad-selector" onclick="cycleRuleset()">
+      <rect x="600" y="10" width="200" height="100" fill="#e0e0e0"/>
+      <text id="rr-rule-text" x="700" y="65" fill="#FFFFFF">UP</text>
+    </g>
+
+    <g onclick="cyclePlaque()">
+      <g id="empty-plaque">
+        <rect x="362.5" y="805" width="75" height="75" fill="#FFFFFF" stroke="#e0e0e0" stroke-dasharray="20 20" stroke-width="6"/>
+      </g>
+      <g id="commuter-plaque">
+        <g transform="translate(400 795)">
+          <rect x="0" y="0" width="70" height="70"  fill="#FFFFFF" stroke="#000000" stroke-width="6" transform="rotate(45)" />
+        </g>
+        <text x="400" y="850" class="plaque-text">C</text>
+      </g>
+      <g id="grade-plaque">
+        <circle fill="#FFFFFF" stroke="#000000" stroke-width="6" cx="400" cy="845" r="40"/>
+        <text x="400" y="850" class="plaque-text">G</text>
+      </g>
+      <g id="distant-signal-plaque">
+        <rect x="362.5" y="805" width="75" height="75" fill="#FFFFFF" stroke="#000000" stroke-width="6"/>
+        <text x="400" y="850" class="plaque-text">D</text>
+      </g>
+      <g id="slide-fence-plaque">
+        <rect x="362.5" y="805" width="75" height="75" fill="#FFFFFF" stroke="#000000" stroke-width="6"/>
+        <text x="400" y="850" class="plaque-text">F</text>
+      </g>
+      <g id="high-water-plaque">
+        <rect x="362.5" y="805" width="75" height="75" fill="#FFFFFF" stroke="#000000" stroke-width="6"/>
+        <text x="400" y="850" class="plaque-text">H</text>
+      </g>
+      <g id="number-plate">
+        <rect x="300" y="811" width="200" height="65" fill="#FFFFFF" stroke="#000000" stroke-width="6"/>
+        <text x="400" y="850" class="plaque-text">#</text>
+      </g>
+      <g id="slide-warning-indicator">
+        <circle fill="#FFFFFF" stroke="#000000" stroke-width="6" cx="400" cy="845" r="40"/>
+        <text x="400" y="850" class="plaque-text">F</text>
+      </g>
+      <g id="take-siding-indicator">
+        <circle fill="#FFFFFF" stroke="#000000" stroke-width="6" cx="400" cy="845" r="40"/>
+        <text x="400" y="850" class="plaque-text">S</text>
+      </g>
+    </g>
+  </svg>
+  <div id="textbox">
+    <h1 id="text-signal-name"></h1>
+    <p id="text-signal-description"></p>
+  </div>
+
+
+  <script>
+    var ruleset = 'UP';
+
+    const signals = {
+      'UP': {
+        'CLEAR': {
+          'aspects': ['G', 'G/R', 'G/D', 'G/R/R', 'G/D/R', 'G/D/D'],
+          'rule': '9.2.1',
+          'text': 'Proceed.'
+        },
+        'APPROACH CLEAR SIXTY': {
+          'aspects': ['Y/FG', 'Y/FG/R'],
+          'rule': '9.2.2',
+          'text': 'Proceed. Freight trains exceeding 60 MPH must immediately reduce to 60 MPH. Passenger trains may proceed, but must be prepared to pass the next signal not exceeding 60 MPH. When signal governs the approach to a control point with a 60 MPH turnout speed be prepared to advance on diverging route.'
+        },
+        'APPROACH CLEAR FIFTY': {
+          'aspects': ['Y/G', 'Y/G/R'],
+          'rule': '9.2.3',
+          'text': 'Proceed. Freight trains exceeding 50 MPH must immediately reduce to 50 MPH. Passenger trains may proceed, but must be prepared to pass the next signal not exceeding 50 MPH. When signal governs the approach to a control point with a 50 MPH turnout speed be prepared to advance on diverging route.'
+        },
+        'ADVANCE APPROACH': {
+          'aspects': ['FY', 'FY/R', 'FY/D', 'FY/R/R', 'FY/D/R', 'FY/D/D'],
+          'rule': '9.2.4',
+          'text': 'Proceed prepared to stop at second signal. Freight trains exceeding 40 MPH must immediately reduce to 40 MPH. Passenger trains may proceed, but must be prepared to pass the next signal not exceeding 40 MPH. When signal governs the approach to a control point with a 40 MPH turnout speed be prepared to advance on normal or diverging route. When the next signal is seen to display an aspect more favorable than APPROACH or DIVERGING APPROACH, the requirement to proceed prepared to stop short of the second signal is no longer required.'
+        },
+        'ADVANCE APPROACH PASSENGER': {
+          'aspects': ['FY [C]', 'FY/R [C]', 'FY/D [C]', 'FY/R/R [C]', 'FY/D/D [C]'],
+          'rule': '9.2.4P',
+          'text': 'Proceed prepared to stop at second signal. Freight trains exceeding 40 MPH must immediately reduce to 40 MPH. Passenger trains may proceed, but must be prepared to pass the next signal not exceeding 60 MPH. When the next signal is seen to display an aspect more favorable than APPROACH or DIVERGING APPROACH, the requirement to proceed prepared to stop short of the second signal is no longer required.'
+        },
+        'APPROACH DIVERGING': {
+          'aspects': ['Y/Y', 'Y/Y/R', 'Y/Y/D', 'Y/R/Y'],
+          'rule': '9.2.5',
+          'text': 'Proceed prepared to advance on diverging route at next signal at prescribed speed through turnout.'
+        },
+        'APPROACH': {
+          'aspects': ['Y', 'Y/R', 'Y/D', 'D/Y', 'Y/R/R', 'Y/D/R', 'Y/D/D'],
+          'rule': '9.2.6',
+          'text': 'Proceed prepared to stop before any part of train or engine passes the next signal. Freight trains exceeding 30 MPH must immediately reduce to 30 MPH. Passenger trains exceeding 40 MPH must immediately reduce to 40 MPH. When the next signal is seen to display a proceed indication, the requirement to proceed prepared to stop no longer applies. Speed may be resumed once leading wheels of train have passed (next) signal. (See Rule 6.13).'
+        },
+        'DISTANT SIGNAL CLEAR': {
+          'aspects': ['G [D]', 'G/D [D]'],
+          'rule': '9.1.1',
+          'text': 'Proceed. If delayed per Rule 9.9 or Rule 9.9.1 between this signal and block or interlocking signal, proceed prepared to stop before any part of train or engine passes the next signal.'
+        },
+        'APPROACH RESTRICTING': {
+          'aspects': ['Y/L', 'Y/L/R', 'Y/FR'],
+          'rule': '9.2.7',
+          'text': 'Proceed prepared to pass next signal at Restricted speed, but not exceeding 15 MPH. When the next signal is seen to display a proceed indication, the requirement to pass next signal at Restricted speed no longer applies. Speed may be resumed once leading wheels of train have passed (next) signal.'
+        },
+        'DIVERGING CLEAR LIMITED': {
+          'aspects': ['R/FG', 'R/FG/R'],
+          'rule': '9.2.8',
+          'text': 'Proceed on diverging route. Speed through turnout must not exceed 40 MPH.'
+        },
+        'DIVERGING CLEAR': {
+          'aspects': ['R/G', 'R/G/R', 'R/G/D'],
+          'rule': '9.2.9',
+          'text': 'Proceed on diverging route not exceeding prescribed speed through turnout'
+        },
+        'DIVERGING ADVANCE APPROACH': {
+          'aspects': ['R/FY', 'R/FY/R', 'R/R/FY'],
+          'rule': '9.2.10',
+          'text': 'Proceed on diverging route not exceeding prescribed speed through turnout and be prepared to stop at second signal. Freight trains exceeding 40 MPH must immediately reduce to 40 MPH. Passenger trains may proceed, but must be prepared to pass the next signal not exceeding 40 MPH. When signal governs the approach to a control point with a 40 MPH turnout speed be prepared to advance on normal or diverging route. When the next signal is seen to display an aspect more favorable than APPROACH or DIVERGING APPROACH, the requirement to proceed prepared to stop short of the second signal is no longer required.'
+        },
+        'DIVERGING ADVANCE APPROACH PASSENGER': {
+          'aspects': ['R/FY [C]', 'R/FY/R [C]'],
+          'rule': '9.2.10P',
+          'text': 'Proceed on diverging route at prescribed speed through turnout prepared to stop at second signal. Freight trains exceeding 40 MPH must immediately reduce to 40 MPH. Passenger trains exceeding 60 MPH must immediately reduce to 60 MPH. When the next signal is seen to display an aspect more favorable than APPROACH or DIVERGING APPROACH, the requirement to proceed prepared to stop short of the second signal is no longer required.'
+        },
+        'DIVERGING APPROACH': {
+          'aspects': ['R/Y', 'R/Y/R', 'R/Y/D', 'R/R/Y'],
+          'rule': '9.2.11',
+          'text': 'Proceed on diverging route at prescribed speed through turnout prepared to stop before any part of train or engine passes the next signal. Freight trains exceeding 30 MPH must immediately reduce to 30 MPH. Passenger trains exceeding 40 MPH must immediately reduce to 40 MPH. When the next signal is seen to display a proceed indication, the requirement to proceed prepared to stop no longer applies. Speed may be resumed once leading wheels of train have passed (next) signal.'
+        },
+        'DIVERGING APPROACH DIVERGING': {
+          'aspects': ['R/Y/Y'],
+          'rule': '9.2.12',
+          'text': 'Proceed on diverging route not exceeding prescribed speed through turnout prepared to advance on diverging route at the next signal at prescribed speed through turnout.'
+        },
+        'DISTANT SIGNAL APPROACH': {
+          'aspects': ['Y [D]', 'Y/D [D]'],
+          'rule': '9.1.2',
+          'text': 'Proceed prepared to stop before any part of train or engine passes the next signal or switch point indicator. The maximum speed is 20 MPH within interlocking limits or within the limits of the control point for which Distant Signal Approach is displayed at the distant signal.'
+        },
+        'RESTRICTING': {
+          'aspects': [
+            'L', 'L/R', 'R/L', 'D/L', 'L/R/R', 'R/L/R', 'R/L/D', 'R/R/L',
+            'FR', 'FR/R', 'FR/D', 'R/FR', 'D/FR', 'FR/R/R', 'FR/D/R', 'FR/D/D', 'R/FR/R', 'D/FR/R',
+            'D/FR/D', 'R/R/FR', 'R/D/FR', 'D/D/FR',
+            'R FY', 'R/R FY', 'R/R/R FY',
+            'R [G]', 'R/R [G]', 'R/D [G]'],
+          'rule': '9.2.13',
+          'text': 'Proceed at Restricted speed, not exceeding prescribed speed through turnout when applicable.'
+        },
+        'RESTRICTED PROCEED': {
+          'aspects': ['R [#]', 'R/R [#]', 'R/D [#]', 'R/R/R [#]'],
+          'rule': '9.2.14',
+          'text': 'Proceed at Restricted speed.'
+        },
+        'STOP': {
+          'aspects': ['R', 'R/R', 'R/D', 'R/R/R', 'R/R/D'],
+          'rule': '9.2.15',
+          'text': 'Stop before any part of train or engine passes the signal.'
+        },
+        'DIVERGING APPROACH CLEAR FIFTY': {
+          'aspects': ['R/Y/G'],
+          'rule': '9.2.16',
+          'text': 'Proceed on diverging route at prescribed speed through turnout. Freight trains exceeding 50 MPH must immediately reduce to 50 MPH. Passenger trains may proceed, but must be prepared to pass the next signal not exceeding 50 MPH. When signal governs the approach to a control point with a 50 MPH turnout speed, be prepared to advance on diverging route.'
+        },
+        'DISTANT SIGNAL APPROACH DIVERGING': {
+          'aspects': ['Y/Y [D]'],
+          'rule': '9.1.3',
+          'text': 'Proceed prepared to advance on diverging route at next signal at prescribed speed through turnout.'
+        },
+        'SLIDE WARNING': {
+          'aspects': ['R (F)', 'R/R (F)', 'R/R/R (F)'],
+          'rule': '9.4.1',
+          'text': 'When signal requires movement at Restricted speed to next signal, keep close lookout for rocks or other obstructions, and broken, bent or damaged rail.'
+        }
+      },
+      'BNSF': {
+        'CLEAR': {
+          'aspects': ['G', 'G/R', 'G/D', 'G/R/R', 'G/R/D', 'G/D/R', 'G/D/D'],
+          'rule': '9.1.3',
+          'text': 'Proceed.'
+        },
+        'APPROACH LIMITED': {
+          'aspects': ['Y/FG'],
+          'rule': '9.1.4',
+          'text': 'Proceed prepared to pass next signal not exceeding 60 MPH and be prepared to enter diverging route at prescribed speed.'
+        },
+        'ADVANCE APPROACH': {
+          'aspects': ['Y/G', 'Y/G/R', 'Y/G/D'],
+          'rule': '9.1.5',
+          'text': 'Proceed prepared to pass next signal not exceeding 50 MPH and be prepared to enter diverging route at prescribed speed.'
+        },
+        'APPROACH MEDIUM': {
+          'aspects': ['FY', 'FY/R', 'FY/D', 'FY/R/R', 'FY/R/D', 'FY/D/R', 'FY/D/D', 'Y/Y', 'Y/Y/R', 'Y/Y/D'],
+          'rule': '9.1.6',
+          'text': 'Proceed prepared to pass next signal not exceeding 40 MPH and be prepared to enter diverging route at prescribed speed.'
+        },
+        'APPROACH RESTRICTING': {
+          'aspects': ['Y/L', 'Y/FR', 'Y/L/R', 'Y/FR/R', 'Y/FR/D'],
+          'rule': '9.1.7',
+          'text': 'Proceed, prepared to pass next signal at Restricted speed.'
+        },
+        'APPROACH': {
+          'aspects': ['Y', 'Y/R', 'Y/D', 'D/Y', 'Y/R/R', 'Y/R/D', 'Y/D/R', 'Y/D/D'],
+          'rule': '9.1.8',
+          'text': 'Proceed prepared to stop at next signal, trains exceeding 30 MPH immediately reduce to that speed. See Rule 6.13. NOTE: Speed is 40 MPH for passenger and active PTC trains.'
+        },
+        'DIVERGING CLEAR': {
+          'aspects': ['R/G', 'R/G/R', 'R/G/D', 'R/R/G'],
+          'rule': '9.1.9',
+          'text': 'Proceed on diverging route not exceeding prescribed speed through turnout.'
+        },
+        'DIVERGING APPROACH DIVERGING': {
+          'aspects': ['R/Y/Y'],
+          'rule': '9.1.10',
+          'text': 'Proceed on diverging route not exceeding prescribed speed through turnout, prepared to advance on diverging route at the next signal, not exceeding prescribed speed through turnout.'
+        },
+        'DIVERGING APPROACH MEDIUM': {
+          'aspects': ['R/FY', 'R/FY/R', 'R/FY/D'],
+          'rule': '9.1.11',
+          'text': 'Proceed on diverging route not exceeding prescribed speed through turnout, prepared to pass next signal not exceeding 35 MPH.'
+        },
+        'DIVERGING APPROACH': {
+          'aspects': ['R/Y', 'R/Y/R', 'R/Y/D', 'R/R/Y'],
+          'rule': '9.1.12',
+          'text': 'Proceed on diverging route not exceeding prescribed speed through turnout, and approach next signal preparing to stop. If exceeding 30 MPH immediately reduce to that speed. See Rule 6.13. NOTE: Speed is 40 MPH for passenger and active PTC trains.'
+        },
+        'RESTRICTING': {
+          'aspects': ['FR', 'FR/R', 'FR/D', 'R/FR', 'D/FR', 'FR/R/R', 'FR/R/D', 'FR/D/R', 'R/FR/R', 'R/FR/D', 'R/R/FR',
+          'L', 'L/R', 'R/L', 'D/L', 'L/R/R', 'R/L/R', 'R/R/L', 'R [#]', 'R/R [#]', 'R/D [#]', 'D/R [#]', 'R [G]', 'R/R [G]', 'R/D [G]', 'D/R [G]'],
+          'rule': '9.1.13',
+          'text': 'Proceed at Restricted speed.'
+        },
+        'STOP': {
+          'aspects': ['R', 'R/R', 'R/D', 'D/R', 'R/R/R', 'R/R/D', 'R/D/R', 'D/R/R'],
+          'rule': '9.1.15',
+          'text': 'Stop.'
+        },
+        // 'TAKE SIDING INDICATOR': {
+        //   'aspects': ['* [S]'],
+        //   'rule': '9.1.16',
+        //   'text': 'When illuminated, hand operate switch to enter next siding or to leave siding and enter main track.'
+        // },
+        'SLIDE FENCE INDICATOR - DANGER': {
+          'aspects': ['L [F]', 'D [F]'],
+          'rule': '9.1.22',
+          'text': 'Slide fence has been activated. Proceed at Restricted speed until passing the End of Restriction sign.'
+        },
+        'SLIDE FENCE INDICATOR - NORMAL': {
+          'aspects': ['FL [F]'],
+          'rule': '9.1.23',
+          'text': 'Slide fence has not been activated.'
+        },
+        'HIGH WATER INDICATOR - DANGER': {
+          'aspects': ['R [H]', 'D [H]'],
+          'rule': '9.1.25',
+          'text': 'High water may be present. Proceed at Restricted speed through the detection limits identified by Timetable.'
+        },
+        'HIGH WATER INDICATOR - NORMAL': {
+          'aspects': ['G [H]'],
+          'rule': '9.1.26',
+          'text': 'No high water has been detected.'
+        }
+      }
+    };
+
+
+    var signalLookup = {};
+
+    for (var rr in signals) {
+      signalLookup[rr] = {};
+      for (var name in signals[rr]) {
+        for (var aspectAbbreviation of signals[rr][name].aspects) {
+          signalLookup[rr][aspectAbbreviation] = name;
+        }
+      }
+    }
+
+    const aspectNames = [
+      'empty',
+      'dark',
+      'red',
+      'flashing-red',
+      'yellow',
+      'flashing-yellow',
+      'green',
+      'flashing-green',
+      'lunar',
+      'flashing-lunar'
+    ];
+
+    const aspectAbbreviations = {
+      'dark': 'D',
+      'red': 'R',
+      'flashing-red': 'FR',
+      'yellow': 'Y',
+      'flashing-yellow': 'FY',
+      'green': 'G',
+      'flashing-green': 'FG',
+      'lunar': 'L',
+      'flashing-lunar': 'FL',
+    };
+
+    var cycleIndex = {
+      'top': 0,
+      'middle': 0,
+      'bottom': 0
+    };
+
+
+    function updateText(aspect) {
+      var title = document.getElementById('text-signal-name');
+      var body = document.getElementById('text-signal-description');
+
+      const name = signalLookup[ruleset][aspect];
+
+      if (name in signals[ruleset]) {
+        const signal = signals[ruleset][name];
+        title.textContent = `${name}  [ ${signal.rule} ]`;
+        body.textContent = signal.text;
+
+      } else {
+        title.textContent = '';
+        body.textContent = '';
+      }
+    }
+
+
+    function parseSignal() {
+      var aspectArray = [];
+      for (const position of ['top', 'middle', 'bottom']) {
+        color = document.getElementById(`${position}-aspect`).className.baseVal;
+        if (color != 'empty') {
+          aspectArray.push(aspectAbbreviations[color]);
+        }
+      }
+      var aspect = aspectArray.join('/');
+      if (plaqueIndex != 0) {
+        aspect = `${aspect} ${plaqueAbbreviations[plaqueNames[plaqueIndex]]}`;
+      }
+      // console.log(aspect);
+      updateText(aspect);
+    }
+
+
+    function cycleAspect(position) {
+      cycleIndex[position] = (cycleIndex[position] + 1) % aspectNames.length;
+      document.getElementById(`${position}-aspect`).setAttribute('class', aspectNames[cycleIndex[position]]);
+      parseSignal();
+    }
+
+
+    function cycleRuleset() {
+      if (ruleset == 'UP') {
+        ruleset = 'BNSF';
+      } else {
+        ruleset = 'UP';
+      }
+      document.getElementById('rr-rule-text').textContent = ruleset;
+      parseSignal();
+    }
+
+
+    const plaqueNames = [
+      'empty-plaque',
+      'number-plate',
+      'commuter-plaque',
+      'grade-plaque',
+      'distant-signal-plaque',
+      'slide-fence-plaque',
+      'high-water-plaque',
+      'slide-warning-indicator',
+      'take-siding-indicator',
+    ];
+
+    const plaqueAbbreviations = {
+      'number-plate': '[#]',
+      'commuter-plaque': '[C]',
+      'grade-plaque': '[G]',
+      'distant-signal-plaque': '[D]',
+      'slide-fence-plaque': '[F]',
+      'high-water-plaque': '[H]',
+      'slide-warning-indicator': '(F)',
+      'take-siding-indicator': '(S)',
+    };
+
+    var plaqueIndex = 0;
+    function cyclePlaque() {
+      plaqueIndex = (plaqueIndex + 1) % plaqueNames.length;
+      var currentPlaque = plaqueNames[plaqueIndex];
+      document.getElementById(currentPlaque).style.display = 'inline'; 
+      for (plaqueName of plaqueNames) {
+        if (plaqueName != currentPlaque) {
+          document.getElementById(plaqueName).style.display = 'none';
+        }
+      }
+      parseSignal();
+    }
+
+  </script>
+</body>
+</html>
